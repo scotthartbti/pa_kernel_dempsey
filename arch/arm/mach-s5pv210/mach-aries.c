@@ -316,7 +316,7 @@ static struct s3c2410_uartcfg aries_uartcfgs[] __initdata = {
 		.ucon		= S5PV210_UCON_DEFAULT,
 		.ulcon		= S5PV210_ULCON_DEFAULT,
 		.ufcon		= S5PV210_UFCON_DEFAULT,
-#ifdef CONFIG_MACH_HERRING
+#ifdef CONFIG_MACH_ARIES
 		.wake_peer	= aries_bt_uart_wake_peer,
 #endif
 	},

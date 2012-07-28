@@ -37,7 +37,7 @@
 #include <plat/irqs.h>
 #include "aries.h"
 
-#define BT_SLEEP_ENABLE
+//#define BT_SLEEP_ENABLE
 #define USE_LOCK_DVFS
 
 #define IRQ_BT_HOST_WAKE      IRQ_EINT(21)
@@ -459,7 +459,9 @@ err_lock_dvfs_register:
 	rfkill_destroy(bt_lock_dvfs_rfk);
 
 err_dvfs_lock_alloc:
+#ifdef BT_SLEEP_ENABLE
 	rfkill_unregister(bt_sleep_rfk);
+#endif
 #endif
 
 #ifdef BT_SLEEP_ENABLE
