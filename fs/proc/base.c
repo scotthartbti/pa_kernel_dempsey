@@ -782,6 +782,13 @@ static int mem_open(struct inode* inode, struct file* file)
        put_task_struct(task);
        if (IS_ERR(mm))
            return PTR_ERR(mm);
+
+	if (mm) {
+       /* ensure this mm_struct can't be freed */
+	atomic_inc(&mm->mm_count);
+	/* but do not pin its memory */
+	mmput(mm);
+}
        file->private_data = mm;
 	return 0;
 }
@@ -818,6 +825,8 @@ static ssize_t mem_read(struct file * file, char __user * buf,
                 goto out_put;
 
         ret = 0;
+	if (!atomic_inc_not_zero(&mm->mm_users))
+	goto free;
 
         while (count > 0) {
                 int this_len, retval;
@@ -897,6 +906,8 @@ static ssize_t mem_write(struct file * file, const char __user *buf,
                 count -= retval;
         }
         *ppos = dst;
+mmput(mm);
+free:
         free_page((unsigned long) page);
 out:
         put_task_struct(task);
@@ -925,7 +936,7 @@ static int mem_release(struct inode *inode, struct file *file)
 {
     struct mm_struct *mm = file->private_data;
 
-    mmput(mm);
+    mmdrop(mm);
     return 0;
 }
 
