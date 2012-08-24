@@ -100,7 +100,7 @@ config PVR_LINUX_MEM_AREA_POOL
 config PVR_LINUX_MEM_AREA_POOL_MAX_PAGES
 	int "Maximum number of pages in pool"
 	depends on PVR_LINUX_MEM_AREA_POOL
-	default 5400
+	default 10800
 	help
 		Pool size in pages.
 		A size of 0 disables the pool.
