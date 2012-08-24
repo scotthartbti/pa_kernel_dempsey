@@ -262,6 +262,7 @@ static int scan_read_raw(struct mtd_info *mtd, uint8_t *buf, loff_t offs,
 
 		buf += mtd->oobsize + mtd->writesize;
 		len -= mtd->writesize;
+		offs += mtd->writesize;
 	}
 	return 0;
 }
