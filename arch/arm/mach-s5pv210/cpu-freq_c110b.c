@@ -77,17 +77,17 @@ static unsigned int g_dvfslockval[DVFS_LOCK_TOKEN_NUM];
 //static DEFINE_MUTEX(dvfs_high_lock);
 #endif
 
-const unsigned long arm_volt_max = 1500000;
+const unsigned long arm_volt_max = 1450000;
 const unsigned long int_volt_max = 1250000;
 
 static struct s5pv210_dvs_conf dvs_conf_asv0[] = {
 	 [L0] = {
 		.arm_volt = 1400000,
-		.int_volt = 1200000,
+		.int_volt = 1150000,
 	},
 	[L1] = {
 		.arm_volt = 1350000,
-		.int_volt = 1175000,
+		.int_volt = 1150000,
 	},
 	[L2] = {
 		.arm_volt = 1300000,
@@ -114,11 +114,11 @@ static struct s5pv210_dvs_conf dvs_conf_asv0[] = {
 static struct s5pv210_dvs_conf dvs_conf_asv1[] = {
 	 [L0] = {
 		.arm_volt = 1400000,
-		.int_volt = 1200000,
+		.int_volt = 1150000,
 	},
 	[L1] = {
 		.arm_volt = 1350000,
-		.int_volt = 1175000,
+		.int_volt = 1150000,
 	},
 	[L2] = {
 		.arm_volt = 1300000,
@@ -145,11 +145,11 @@ static struct s5pv210_dvs_conf dvs_conf_asv1[] = {
 static struct s5pv210_dvs_conf dvs_conf_asv2[] = {
 	 [L0] = {
 		.arm_volt = 1400000,
-		.int_volt = 1200000,
+		.int_volt = 1150000,
 	},
 	[L1] = {
 		.arm_volt = 1350000,
-		.int_volt = 1175000,
+		.int_volt = 1150000,
 	},
 	[L2] = {
 		.arm_volt = 1300000,
@@ -181,7 +181,7 @@ static u32 clkdiv_val[7][11] = {
 	 * MFC, G3D }
 	 */
 	/* L0 : [1600/200/200/100][166/83][133/66][200/200] */
-	{0, 6, 6, 1, 3, 1, 4, 1, 3, 0, 0},
+	{0, 7, 7, 1, 3, 1, 4, 1, 3, 0, 0},
 	/* L1 : [1400/200/200/100][166/83][133/66][200/200] */
 	{0, 6, 6, 1, 3, 1, 4, 1, 3, 0, 0},
 	/* L2 : [1200/200/200/100][166/83][133/66][200/200] */
