@@ -50,8 +50,8 @@ static unsigned int mpll_freq; /* in MHz */
 static unsigned int apll_freq_max; /* in MHz */
 static DEFINE_MUTEX(set_freq_lock);
 
-#define CPU_UV_MV_MAX 1350000
-#define CPU_UV_MV_MIN 800000
+/* UV */
+extern int exp_UV_mV[5]; 
 
 /* frequency */
 static struct cpufreq_frequency_table freq_table[] = {
@@ -382,7 +382,7 @@ void s5pv210_lock_dvfs_high_level(uint nToken, uint perf_level)
 	uint freq_level;
 	struct cpufreq_policy *policy;
 
-	pr_debug("%s : lock with token(%d) level(%d) current(%X)\n",
+	printk(KERN_DEBUG "%s : lock with token(%d) level(%d) current(%X)\n",
 			__func__, nToken, perf_level, g_dvfs_high_lock_token);
 
 	if (g_dvfs_high_lock_token & (1 << nToken))
@@ -430,7 +430,7 @@ void s5pv210_unlock_dvfs_high_level(unsigned int nToken)
 
 	//mutex_unlock(&dvfs_high_lock);
 
-	pr_debug("%s : unlock with token(%d) current(%X) level(%d)\n",
+	printk(KERN_DEBUG "%s : unlock with token(%d) current(%X) level(%d)\n",
 			__func__, nToken, g_dvfs_high_lock_token, g_dvfs_high_lock_limit);
 }
 EXPORT_SYMBOL(s5pv210_unlock_dvfs_high_level);
@@ -509,7 +509,7 @@ static int s5pv210_cpufreq_target(struct cpufreq_policy *policy,
 	if (s3c_freqs.freqs.new == s3c_freqs.freqs.old && !first_run)
 		goto out;
 
-	arm_volt = dvs_conf[index].arm_volt;
+	arm_volt = exp_UV_mV[index]; //dvs_conf[index].arm_volt;
 	int_volt = dvs_conf[index].int_volt;
 
 	/* New clock information update */
@@ -692,7 +692,8 @@ static int s5pv210_cpufreq_target(struct cpufreq_policy *policy,
 	memcpy(&s3c_freqs.old, &s3c_freqs.new, sizeof(struct s3c_freq));
 	cpufreq_debug_printk(CPUFREQ_DEBUG_DRIVER, KERN_INFO,
 			"cpufreq: Performance changed[L%d]\n", index);
-	previous_arm_volt = dvs_conf[index].arm_volt;
+	//  previous_arm_volt = dvs_conf[index].arm_volt;
+		previous_arm_volt = exp_UV_mV[index];
 
 	if (first_run)
 		first_run = false;
@@ -735,7 +736,7 @@ static int s5pv210_cpufreq_resume(struct cpufreq_policy *policy)
 
 	memcpy(&s3c_freqs.old, &clk_info[level],
 			sizeof(struct s3c_freq));
-	previous_arm_volt = dvs_conf[level].arm_volt;
+	previous_arm_volt = exp_UV_mV[level]; //dvs_conf[level].arm_volt;
 
 	return ret;
 }
@@ -803,7 +804,7 @@ static int __init s5pv210_cpufreq_driver_init(struct cpufreq_policy *policy)
 
 	memcpy(&s3c_freqs.old, &clk_info[level],
 			sizeof(struct s3c_freq));
-	previous_arm_volt = dvs_conf[level].arm_volt;
+	previous_arm_volt = exp_UV_mV[level]; //dvs_conf[level].arm_volt;
 
 #ifdef CONFIG_DVFS_LIMIT
 	for(i = 0; i < DVFS_LOCK_TOKEN_NUM; i++)
@@ -913,29 +914,3 @@ finish:
 }
 
 late_initcall(s5pv210_cpufreq_init);
-
-/* sysfs interface for UV control */
-ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf) {
-	return sprintf(buf, "1200mhz: %lu mV\n800mhz: %lu mV\n400mhz: %lu mV\n200mhz: %lu mV\n100mhz: %lu mV\n", dvs_conf[0].arm_volt/1000, dvs_conf[1].arm_volt/1000, dvs_conf[2].arm_volt/1000, dvs_conf[3].arm_volt/1000, dvs_conf[4].arm_volt/1000);
-}
-
-ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
-				const char *buf, size_t count) {
-	unsigned int ret = -EINVAL;
-	int u[5];
-	int i = 0;
-	ret = sscanf(buf, "%d %d %d %d %d", &u[0], &u[1], &u[2], &u[3], &u[4]);
-	if(ret != 5) {
-		return -EINVAL;
-	}
-	else {
-		for( i = 0; i < 5; i++ ) {
-			if (u[i] > CPU_UV_MV_MAX / 1000) u[i] = CPU_UV_MV_MAX / 1000;
-			else if (u[i] < CPU_UV_MV_MIN / 1000) u[i] = CPU_UV_MV_MIN / 1000;
-		}
-		for( i = 0; i < 5; i++ ) {
-			dvs_conf[i].arm_volt = u[i] * 1000;
-		}
-		return count;
-	}
-}

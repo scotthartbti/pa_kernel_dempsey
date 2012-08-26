@@ -667,11 +667,6 @@ static ssize_t show_scaling_setspeed(struct cpufreq_policy *policy, char *buf)
 	return policy->governor->show_setspeed(policy, buf);
 }
 
-/* sysfs interface for UV control */
-extern ssize_t show_UV_mV_table(struct cpufreq_policy *policy, char *buf);
-extern ssize_t store_UV_mV_table(struct cpufreq_policy *policy,
-                                      const char *buf, size_t count);
-
 /**
  * show_scaling_driver - show the current cpufreq HW/BIOS limitation
  */
